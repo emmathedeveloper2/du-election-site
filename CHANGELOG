@@ -12,3 +12,4 @@ chore: update package dependencies and add new libraries,  reorganize CHANGELOG 
 
 style: enhance tailwind configuration with custom colors and border radius
 
+refactor: replace sendCode with requestCode in route loader for improved clarity
