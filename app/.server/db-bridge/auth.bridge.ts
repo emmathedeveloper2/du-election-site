@@ -4,7 +4,7 @@ import {eq} from "drizzle-orm";
 import {sendVerificationCodeEmail} from "~/.server/config/email.config";
 import jwt from "jsonwebtoken";
 import {JWT_SECRET} from "~/.server/config/env.config";
-import {generateError, safeTry} from "~/lib/helpers";
+import {generateError} from "~/lib/helpers";
 import {generateSessionToken, getCurrentSession} from "~/.server/db-bridge/session.bridge";
 import {excludePasswordSchema} from "~/database/schemas/user.schema";
 import ERROR from "~/lib/errors";

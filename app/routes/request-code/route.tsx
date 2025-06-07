@@ -4,7 +4,7 @@ import {authCookie} from "~/.server/config/cookies.config";
 import { Route } from "./+types/route";
 import {getCurrentSession} from "~/.server/db-bridge/session.bridge";
 import {getCurrentUser} from "~/.server/db-bridge/user.bridge";
-import {sendCode} from "~/.server/db-bridge/auth.bridge";
+import { requestCode } from "~/.server/db-bridge/auth.bridge";
 
 export const loader = async ({ request } : Route.LoaderArgs) => {
 
@@ -18,7 +18,7 @@ export const loader = async ({ request } : Route.LoaderArgs) => {
         }
     })
 
-    const [ success , updatedSession ] = await safeTry(sendCode(session , user.email))
+    const [ success , updatedSession ] = await safeTry(requestCode(user.email , user.matricNumber))
 
     if(!success) return redirect('/error')
 
