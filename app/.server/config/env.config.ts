@@ -11,5 +11,6 @@ export const {
     SMTP_PASSWORD,
     APP_NAME,
     JWT_SECRET,
-    JWT_EXPIRES_IN
+    JWT_EXPIRES_IN,
+    SUPER_ADMIN,
 } = process.env

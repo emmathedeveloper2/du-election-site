@@ -1,12 +1,15 @@
 import { Link } from "react-router";
-import {getCurrentUser} from "~/.server";
-import {safeTry} from "~/utils";
+import {safeTry} from "~/lib/helpers";
 import { Route } from "./+types/_index";
+import { getCurrentUser } from "~/.server/db-bridge/user.bridge";
+import {Button} from "~/components/ui/button";
+import {ArrowRightIcon} from "lucide-react";
+import Header from "~/components/header/header";
 
 export const meta: Route.MetaFunction = () => {
   return [
-    { title: "MixStack" },
-    { name: "description", content: "Welcome to MixStack" },
+    { title: "NACOS DU" },
+    { name: "description", content: "Welcome to NACOS DU" },
   ];
 };
 
@@ -26,15 +29,24 @@ export default function Index({ loaderData } : Route.ComponentProps) {
   const { user } = loaderData
 
   return (
-    <div className={"size-full flex flex-col items-center justify-center p-2"}>
-        <div className={"w-full md:w-[400px] flex flex-col gap-8 items-center"}>
+      <>
+        <Header user={user} />
+        <div className={"size-full flex flex-col items-center justify-center p-2"}>
+            <div className={"max-width-wrapper flex flex-col gap-8 items-center"}>
 
-          <h1 className={"text-xl md:text-5xl font-black"}>MixStack 🧃</h1>
+              <h1 className={"text-xl md:text-5xl font-black"}>NACOS DU Election 2025</h1>
 
-          <Link to={user ? '/dashboard' : '/signup'} className={"bg-black text-white dark:bg-white dark:text-black p-2 w-full text-center"}>
-            {user ? "DASHBOARD" : "GET STARTED"}
-          </Link>
+              <Button asChild className={'group w-full md:w-[300px]'}>
+                <Link to={user ? '/dashboard' : '/signup'} className={"w-full text-center"}>
+                  {user ? "GET TO VOTING" : "GET STARTED"}
+
+                  <div className={'rotate-45 group-hover:rotate-0 transition-transform'}>
+                    <ArrowRightIcon/>
+                  </div>
+                </Link>
+              </Button>
+            </div>
         </div>
-    </div>
+      </>
   );
 }

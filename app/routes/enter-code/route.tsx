@@ -1,16 +1,20 @@
 import {Form, Link, useNavigation} from "react-router";
 import {LoaderIcon} from "lucide-react";
 import {redirect} from "react-router";
-import {getCurrentUser, verifyCode} from "~/.server";
 import {authCookie} from "~/.server/config/cookies.config";
-import {safeTry} from "~/utils";
+import {formatEmail, safeTry} from "~/lib/helpers";
 import {Route} from "./+types/route";
+import {getCurrentUser} from "~/.server/db-bridge/user.bridge";
+import {verifyUser} from "~/.server/db-bridge/auth.bridge";
+import {Card, CardContent, CardDescription, CardHeader, CardTitle} from "~/components/ui/card";
+import {Input} from "~/components/ui/input";
+import {Button} from "~/components/ui/button";
 
 export async function loader({request}: Route.LoaderArgs) {
 
     const [success, user] = await safeTry(getCurrentUser(request.headers))
 
-    if (!success) return redirect('/signup', {
+    if (!success) return redirect('/error', {
         headers: {
             'Set-Cookie': await authCookie.serialize('', {maxAge: 1})
         }
@@ -30,9 +34,9 @@ export async function action({request}: Route.ActionArgs) {
         message,
     }
 
-    const {code} = Object.fromEntries(await request.formData())
+    const {code , password} = Object.fromEntries(await request.formData())
 
-    const [success, newSession, msg] = await safeTry(verifyCode(request.headers, code as any))
+    const [success, newSession, msg] = await safeTry(verifyUser(request.headers, code as any , password as any))
 
     if (!success) return {
         success,
@@ -54,47 +58,49 @@ export default function CodePage({actionData , loaderData}: Route.ComponentProps
 
     const isBusy = state == 'loading' || state == 'submitting'
 
-    const formatEmail = (text: string) => text.split("").reduce((prev: string, char, idx) => {
-        prev += idx > 0 && idx < text.indexOf("@") ? '*' : char
-
-        return prev
-    }, "")
-
     return (
         <div className={"size-full flex flex-col items-center justify-center p-2"}>
-            <Form method={"POST"} className={"w-full md:w-[400px] flex flex-col gap-8 items-center"}>
-                {
-                    actionData && !actionData.success &&
-                    <p className={"text-center"}>{actionData.message}</p>
-                }
+            <Card className={"w-full md:w-[400px]"}>
+                <CardHeader>
+                    <CardTitle className={"text-center text-xl md:text-3xl"}>Enter Code</CardTitle>
+                    <CardDescription>
+                        Enter the code sent to {formatEmail(email)} and set your password
+                    </CardDescription>
+                </CardHeader>
+                <CardContent>
+                    <Form method={"post"}>
+                        <div className="flex flex-col gap-6">
+                            {
+                                actionData && !actionData.success &&
+                                <div className={"w-full rounded p-2 bg-destructive text-destructive-foreground grid place-items-center"}>
+                                    {actionData.message}
+                                </div>
+                            }
+                            <div className="grid gap-3">
+                                <Input
+                                    id="code"
+                                    type="code"
+                                    name={"code"}
+                                    placeholder="000000"
+                                    required
+                                />
+                            </div>
 
-                <p className={"text-center"}>A 6 digit code was sent to {formatEmail(email)}</p>
+                            <Input name={"password"} id="password" type="password" placeholder={"Your Password"} required/>
 
-                <input
-                    required
-                    type="number"
-                    name="code"
-                    placeholder={"6 digit code"}
-                    className={"w-full p-2"}
-                />
+                            <div className="flex flex-col gap-3">
+                                <Button disabled={isBusy} className="w-full">
+                                    {isBusy ? <LoaderIcon className={"animate-spin"} /> : "VERIFY" }
+                                </Button>
 
-                <button
-                    disabled={isBusy}
-                    className={"bg-black text-white dark:bg-white dark:text-black p-2 w-full flex items-center justify-center"}
-                >
-                    {isBusy ? <LoaderIcon className={"animate-spin"}/> : "VERIFY ACCOUNT"}
-                </button>
-
-
-                {!isBusy &&
-                    <span className={"flex gap-1"}>
-                        Didn't receive code?
-                        <Link to={'/request-code'} className={"underline"}>
-                            Resend Code
-                        </Link>
-                    </span>
-                }
-            </Form>
+                                <Button disabled={isBusy} variant={"secondary"} className="w-full">
+                                    Resend Code
+                                </Button>
+                            </div>
+                        </div>
+                    </Form>
+                </CardContent>
+            </Card>
         </div>
     )
 }

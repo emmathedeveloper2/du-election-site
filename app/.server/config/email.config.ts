@@ -13,7 +13,7 @@ const transporter = createTransport({
     }
 })
 
-const sendVerificationEmail = async (email: string , code: string) => {
+const sendVerificationCodeEmail = async (email: string , code: string) => {
 
     const mailOptions = {
         from: SMTP_USERNAME,
@@ -25,4 +25,4 @@ const sendVerificationEmail = async (email: string , code: string) => {
     await transporter.sendMail(mailOptions)
 }
 
-export { sendVerificationEmail }
+export { sendVerificationCodeEmail }
