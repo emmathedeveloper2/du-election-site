@@ -1,3 +1,14 @@
-# 2025 - 6 - 7
+# 2025 - 6 - 6
 
 ## Add initial files for authentication, session management, user handling, and routing components
+
+# 2025 - 6 - 7
+
+feat: add components.json for UI configuration and update tailwind settings
+
+fix: update drizzle configuration to use new schema path
+
+chore: update package dependencies and add new libraries,  reorganize CHANGELOG for better clarity and structure
+
+style: enhance tailwind configuration with custom colors and border radius
+
