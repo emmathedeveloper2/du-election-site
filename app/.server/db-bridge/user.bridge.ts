@@ -115,8 +115,6 @@ export const getUsers = async (page = 1, pageSize = 10 , options?: { query: stri
             .offset(offset);
     }
 
-    console.log(totalCount)
-
     const totalPages = Math.ceil(totalCount / pageSize);
 
     return {
