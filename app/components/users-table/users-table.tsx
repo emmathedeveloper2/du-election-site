@@ -8,6 +8,7 @@ import {
 } from "~/components/ui/table"
 import {usersTable} from "~/database/schemas";
 import UserTableOptions from "./user-table-options";
+import { toTitleCase } from "~/lib/helpers";
 
 type UsersTableProps = {
     users: Array<Omit<typeof usersTable.$inferSelect , "password">>;
@@ -32,7 +33,7 @@ const UsersTable = ({ users , isSuperAdmin } : UsersTableProps) => {
                     <TableRow key={user.id}>
                         <TableCell className="font-medium">{user.matricNumber}</TableCell>
                         <TableCell>{user.fullname}</TableCell>
-                        <TableCell>{user.programme}</TableCell>
+                        <TableCell>{toTitleCase(user.programme)}</TableCell>
                         <TableCell>{user.level}</TableCell>
                         <TableCell>
                             <UserTableOptions user={user} isSuperAdmin={isSuperAdmin}/>
