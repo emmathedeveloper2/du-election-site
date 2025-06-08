@@ -94,7 +94,7 @@ body {
 
 @layer utilities {
   .max-width-wrapper {
-    @apply w-full md:w-[1000px]
+    @apply w-full lg:w-[1000px]
   }
 
   .gradient-cover {

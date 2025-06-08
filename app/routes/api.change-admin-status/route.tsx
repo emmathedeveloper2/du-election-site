@@ -1,5 +1,5 @@
 import { safeTry } from "~/lib/helpers"
-import { getCurrentUser, updateUser } from "~/.server/db-bridge/user.bridge"
+import { getCurrentUser, isSuperAdmin, updateUser } from "~/.server/db-bridge/user.bridge"
 
 export async function action({ request }: { request: Request }) {
     // Check if the user is authenticated and is an admin
@@ -7,7 +7,8 @@ export async function action({ request }: { request: Request }) {
     if (!success || !user) {
         return { success: false, status: 401, message: message || "Unauthorized" }
     }
-    if (!user.admin) {
+
+    if (!isSuperAdmin(user)) {
         return { success: false, status: 403, message: "You are not authorized to perform this action" }
     }
 
@@ -15,13 +16,16 @@ export async function action({ request }: { request: Request }) {
     const formData = await request.formData()
 
     const userId = formData.get("userId")
+
+    const operation = formData.get("operation")
+
     if (!userId || typeof userId !== "string") {
         return { success: false, status: 400, message: "Invalid user ID" }
     }
 
-    // Update the user to set admin: true
+    // Update the user to set admin
     const [updateSuccess, updatedUser, updateMsg] = await safeTry(
-        updateUser(userId, { admin: true })
+        updateUser(userId, { admin: operation === "add" ? true : false })
     )
     if (!updateSuccess || !updatedUser) {
         return { success: false, status: 400, message: updateMsg || "Failed to make user admin" }

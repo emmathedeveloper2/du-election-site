@@ -13,6 +13,7 @@ const usersTable = pgTable("users", {
     verified: boolean('is_verified').notNull().default(false),//generated
     admin: boolean('is_admin').notNull().default(false),//generated
     gender: varchar({ length: 255 , enum: ["male" , "female"]}),//generated
+    candidate: boolean('is_candidate').notNull().default(false),//generated
 });
 
 

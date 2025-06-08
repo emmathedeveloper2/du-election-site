@@ -49,8 +49,8 @@ const AdminPagination = ({ page, totalPages }: AdminPaginationProps) => {
     const pageRange = getPageRange(page, totalPages)
 
     return (
-        <Pagination className="mt-6">
-            <PaginationContent>
+        <Pagination className="w-full lg:w-max">
+            <PaginationContent className="w-full lg:w-max flex items-center justify-between">
                 <PaginationItem>
                     <PaginationPrevious
                         onClick={page > 1 ? () => goToPage(page - 1) : undefined}

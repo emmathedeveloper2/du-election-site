@@ -1,10 +1,11 @@
-import {sessionsTable, usersTable} from "~/database/schemas";
+import {sessionsTable, usersTable, candidatesTable} from "~/database/schemas";
 import db from "~/database";
 import {count, eq} from "drizzle-orm";
 import {getCurrentSession} from "~/.server/db-bridge/session.bridge";
 import {generateError} from "~/lib/helpers";
 import ERROR from "~/lib/errors";
 import {excludePasswordSchema} from "~/database/schemas/user.schema";
+import { SUPER_ADMIN } from "../config/env.config";
 
 export const getUserByEmail = async (email: string) => {
 
@@ -58,20 +59,63 @@ export const seedUsers = async (data: Array<typeof usersTable.$inferInsert>) => 
     }
 }
 
-export const getUsers = async (page = 1, pageSize = 10) => {
+export const getUsers = async (page = 1, pageSize = 10 , options?: { query: string , filter: 'admin' | 'candidate' }) => {
     const offset = (page - 1) * pageSize;
+    
+    let users;
 
-    // Get total count
-    const [{ count: totalCount }] = await db
+    let totalCount;
+
+    if(options?.filter == 'admin') {
+
+        // Get total count
+        totalCount = (await db
         .select({count: count()})
-        .from(usersTable);
-
-    // Get paginated rows
-    const users = await db
-        .select()
         .from(usersTable)
-        .limit(pageSize)
-        .offset(offset);
+        .where(eq(usersTable.admin, true)))[0].count;
+
+        // Get paginated rows for admins
+        
+        users = await db
+            .select(excludePasswordSchema)
+            .from(usersTable)
+            .where(eq(usersTable.admin, true))
+            .limit(pageSize)
+            .offset(offset);
+
+        console.log(totalCount)
+
+    } else if (options?.filter == 'candidate') {
+
+        // Get total count
+        totalCount = (await db
+            .select({count: count()})
+            .from(usersTable)
+            .where(eq(usersTable.candidate, true)))[0].count;
+
+        // Get paginated rows for candidates
+        users = await db
+            .select(excludePasswordSchema)
+            .from(usersTable)
+            .where(eq(usersTable.candidate, true))
+            .limit(pageSize)
+            .offset(offset);
+    } else {
+
+        // Get total count
+        totalCount = (await db
+            .select({count: count()})
+            .from(usersTable))[0].count;
+
+        // Get paginated rows for all users
+        users = await db
+            .select(excludePasswordSchema)
+            .from(usersTable)
+            .limit(pageSize)
+            .offset(offset);
+    }
+
+    console.log(totalCount)
 
     const totalPages = Math.ceil(totalCount / pageSize);
 
@@ -94,5 +138,94 @@ export const updateUser = async (id: string, data: Partial<typeof usersTable.$in
         return updatedUser
     } catch (e) {
         throw e
+    }
+}
+
+export const isSuperAdmin = (user: Partial<typeof usersTable.$inferSelect>) => {
+    return user.matricNumber == SUPER_ADMIN
+}
+
+export const getCandidateByUserId = async (userId: string) => {
+    try {
+        // Fetch candidate row by userId from the candidates table
+        const [ candidate ] = await db
+            .select()
+            .from(candidatesTable)
+            .where(eq(candidatesTable.userId, userId))
+            .limit(1)
+
+        return candidate
+    } catch (e) {
+        throw e
+    }
+}
+
+export const updateCandidatePosition = async (userId: string, position: string) => {
+    try {
+        // Check if candidate already exists
+        const [existingCandidate] = await db
+            .select()
+            .from(candidatesTable)
+            .where(eq(candidatesTable.userId, userId))
+            .limit(1)
+
+        let candidateRow
+
+        if (existingCandidate) {
+            // Update the candidate's position in the candidates table
+            const updated = await db
+                .update(candidatesTable)
+                .set({ position })
+                .where(eq(candidatesTable.userId, userId))
+                .returning()
+
+            if (!updated || updated.length === 0) {
+                throw new Error("Candidate not found")
+            }
+
+            candidateRow = updated[0]
+        } else {
+            // Create a new candidate row
+            const inserted = await db
+                .insert(candidatesTable)
+                .values({ userId, position })
+                .returning()
+
+            if (!inserted || inserted.length === 0) {
+                throw new Error("Failed to create candidate")
+            }
+            
+            candidateRow = inserted[0]
+        }
+
+        // Also update the user to set candidate: true
+        await db
+            .update(usersTable)
+            .set({ candidate: true })
+            .where(eq(usersTable.id, userId))
+
+        return candidateRow
+    } catch (e) {
+        throw e
+    }
+}
+
+export const removeCandidateByUserId = async (userId: string) => {
+    try {
+        // Delete candidate row from candidates table
+        const deleted = await db
+            .delete(candidatesTable)
+            .where(eq(candidatesTable.userId, userId))
+            .returning();
+
+        // Update user to set candidate: false
+        await db
+            .update(usersTable)
+            .set({ candidate: false })
+            .where(eq(usersTable.id, userId));
+
+        return deleted[0];
+    } catch (e) {
+        throw e;
     }
 }

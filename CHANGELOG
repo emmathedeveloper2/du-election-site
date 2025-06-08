@@ -13,3 +13,7 @@ chore: update package dependencies and add new libraries,  reorganize CHANGELOG 
 style: enhance tailwind configuration with custom colors and border radius
 
 refactor: replace sendCode with requestCode in route loader for improved clarity
+
+# 2025 - 6 - 8
+
+feat: implement candidate management features including CRUD operations and admin status changes

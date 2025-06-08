@@ -1,14 +1,17 @@
 import { usersTable } from "~/database/schemas";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "../ui/dropdown-menu";
-import { EllipsisIcon, UserIcon, UserPenIcon, UserPlusIcon } from "lucide-react";
+import { EllipsisIcon, UserIcon } from "lucide-react";
 import EditUserDialog from "../edit-user-dialog";
-import ConfirmMakeAdminDialog from "../confirm-make-admin-dialog";
+import ConfirmChangeAdminStatusDialog from "../confirm-change-admin-status-dialog";
+import SelectPositionList from "../select-position-list";
+import RemoveCandidateDialog from "../remove-candidate-dialog";
 
 interface UserTableOptionsProps {
     user: Omit<typeof usersTable.$inferSelect, "password">;
+    isSuperAdmin: boolean;
 }
 
-const UserTableOptions = ({ user }: UserTableOptionsProps) => {
+const UserTableOptions = ({ user, isSuperAdmin }: UserTableOptionsProps) => {
     return (
         <DropdownMenu>
             <DropdownMenuTrigger>
@@ -23,10 +26,15 @@ const UserTableOptions = ({ user }: UserTableOptionsProps) => {
                 </DropdownMenuItem>
                 <EditUserDialog user={user} />
                 <DropdownMenuSeparator />
-                <ConfirmMakeAdminDialog user={user} />
-                <DropdownMenuItem className="flex justify-between">
-                    Make Candidate
-                </DropdownMenuItem>
+                {
+                    isSuperAdmin &&
+                    <ConfirmChangeAdminStatusDialog user={user} operation={user.admin ? 'remove' : 'add'} />
+                }
+                <SelectPositionList user={user} />
+                {
+                    user.candidate &&
+                    <RemoveCandidateDialog user={user} />
+                }
             </DropdownMenuContent>
         </DropdownMenu>
     );

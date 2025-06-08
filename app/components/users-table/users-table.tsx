@@ -1,22 +1,20 @@
 import {
     Table,
     TableBody,
-    TableCaption,
     TableCell,
     TableHead,
     TableHeader,
     TableRow,
 } from "~/components/ui/table"
 import {usersTable} from "~/database/schemas";
-import {Button} from "~/components/ui/button";
-import {EllipsisIcon} from "lucide-react";
 import UserTableOptions from "./user-table-options";
 
 type UsersTableProps = {
-    users: Array<Omit<typeof usersTable.$inferSelect , "password">>
+    users: Array<Omit<typeof usersTable.$inferSelect , "password">>;
+    isSuperAdmin: boolean;
 }
 
-const UsersTable = ({ users } : UsersTableProps) => {
+const UsersTable = ({ users , isSuperAdmin } : UsersTableProps) => {
 
     return (
         <Table className={"mt-5 md:mt-10"}>
@@ -37,7 +35,7 @@ const UsersTable = ({ users } : UsersTableProps) => {
                         <TableCell>{user.programme}</TableCell>
                         <TableCell>{user.level}</TableCell>
                         <TableCell>
-                            <UserTableOptions user={user} />
+                            <UserTableOptions user={user} isSuperAdmin={isSuperAdmin}/>
                         </TableCell>
                     </TableRow>
                 ))}

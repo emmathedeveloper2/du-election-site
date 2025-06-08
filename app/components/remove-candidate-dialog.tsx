@@ -1,4 +1,4 @@
-import React, { useEffect } from "react"
+import { useEffect } from "react"
 import {
     Dialog,
     DialogTrigger,
@@ -10,52 +10,43 @@ import {
     DialogClose,
 } from "./ui/dialog"
 import { Button } from "./ui/button"
-import { LoaderIcon, UserPlusIcon } from "lucide-react"
+import { LoaderIcon, UserMinusIcon } from "lucide-react"
 import { usersTable } from "~/database/schemas"
 import { useFetcher } from "react-router"
 import { toast } from "sonner"
 
-type ConfirmMakeAdminDialogProps = {
-    user: Omit<typeof usersTable.$inferSelect, "password">
-}
-
-const ConfirmMakeAdminDialog = ({ user }: ConfirmMakeAdminDialogProps) => {
+const RemoveCandidateDialog = ({ user }: { user: Omit<typeof usersTable.$inferSelect, "password"> }) => {
     const fetcher = useFetcher()
-    const loading = fetcher.state !== "idle"
+    const loading = fetcher.state === "submitting"
 
-    // Show toast on success or failure
     useEffect(() => {
-        if (fetcher.state === "idle" && fetcher.data) {
-            if (fetcher.data.success) {
-                toast.success(`${user.fullname} is now an admin!`)
-            } else if (fetcher.data.error) {
-                toast.error(fetcher.data.error || "Failed to make admin.")
-            }
+        if (fetcher.data?.success) {
+            toast.success(fetcher.data.message || "Candidate removed successfully")
+        } else if (fetcher.data && fetcher.data.success === false) {
+            toast.error(fetcher.data.message || "Failed to remove candidate")
         }
-    }, [fetcher.state, fetcher.data, user.fullname])
+    }, [fetcher.data])
 
     const onConfirm = () => {
         fetcher.submit(
             { userId: user.id },
-            { method: "post", action: "/api/make-admin" }
+            { method: "post", action: "/api/candidates/remove" }
         )
     }
 
     return (
         <Dialog>
-            <DialogTrigger asChild className="w-full flex justify-between items-center p-2">
-                <Button variant="ghost">
-                    Make Admin
-                    <UserPlusIcon />
+            <DialogTrigger asChild className="w-full flex justify-between items-center px-2">
+                <Button variant="ghost" className="text-red-600 w-full flex justify-between items-center">
+                    Remove Candidate
+                    <UserMinusIcon />
                 </Button>
             </DialogTrigger>
             <DialogContent>
                 <DialogHeader>
-                    <DialogTitle>Make Admin</DialogTitle>
+                    <DialogTitle>Remove Candidate</DialogTitle>
                     <DialogDescription>
-                        Are you sure you want to make{" "}
-                        <span className="font-semibold">{user.fullname}</span> an admin? This action
-                        can be reverted later.
+                        Are you sure you want to remove <span className="font-semibold">{user.fullname}</span> as a candidate? This action cannot be undone.
                     </DialogDescription>
                 </DialogHeader>
                 <DialogFooter>
@@ -70,7 +61,7 @@ const ConfirmMakeAdminDialog = ({ user }: ConfirmMakeAdminDialogProps) => {
                         disabled={loading}
                         type="button"
                     >
-                        {loading ? <LoaderIcon className="animate-spin"/> : "Confirm"}
+                        {loading ? <LoaderIcon className="animate-spin w-4 h-4 mr-2" /> : "Confirm"}
                     </Button>
                 </DialogFooter>
             </DialogContent>
@@ -78,4 +69,4 @@ const ConfirmMakeAdminDialog = ({ user }: ConfirmMakeAdminDialogProps) => {
     )
 }
 
-export default ConfirmMakeAdminDialog
+export default RemoveCandidateDialog

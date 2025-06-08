@@ -1,4 +1,17 @@
 
 export const PROGRAMMES = ['Computer Science', 'Software Engineering','Cyber Security'];
 
-export const POSITIONS = ['President', 'Vice President', 'Software Director'];
+export const POSITIONS = [
+    'President', 
+    'Vice President', 
+    'Software Director',
+    'General Secretary',
+    'Assistant General Secretary',
+    'Financial Secretary',
+    'Public Relations Officer 1',
+    'Public Relations Officer 2',
+    'Social Director',
+    'Welfare Director',
+    'Sports Director',
+    'Academic Director',
+];

@@ -32,3 +32,14 @@ export const formatEmail = (text: string) => text.split("").reduce((prev: string
 }, "")
 
 export const getInitials = (text: string) => text.split(" ").map(n => n[0]).join('').toUpperCase()
+
+export const parseOptionsFromURL = (searchParams: URLSearchParams) => {
+    // Example: extract "query" and "filter" from query params
+    const query = searchParams.get("query") || "";
+    const page = Number(searchParams.get("page") || "1");
+    const filter = searchParams.get("filter") || "all";
+    return { page, query, filter };
+}
+
+export const toTitleCase = (text: string) =>
+    text.replace(/\w\S*/g, (word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
