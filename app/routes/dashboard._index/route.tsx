@@ -64,47 +64,9 @@ export default function DashboardPage({loaderData}: Route.ComponentProps) {
                         </div>
                     </div>
 
-                    <div className={'flex flex-col gap-4 mt-5 md:mt-10 lg:mt-20'}>
-                    <h1 className={"text-lg md:text-3xl lg:text-5xl font-black flex items-center gap-4"}>
-                            Running for President
-                            <ArrowRightIcon />
-                        </h1>
-
-                        <div className={"w-full grid grid-cols-1 md:grid-cols-4 gap-4 mt-5 md:mt-10"}>
-                            <ElectionCandidateCard />
-                            <ElectionCandidateCard />
-                        </div>
-                    </div>
-                    <div className={'flex flex-col gap-4 mt-20'}>
-                        <h1 className={"text-lg md:text-3xl lg:text-5xl font-black flex items-center gap-4"}>
-                            Running for Vice President
-                            <ArrowRightIcon />
-                        </h1>
-
-                        <div className={"w-full grid grid-cols-1 md:grid-cols-4 gap-4 mt-10"}>
-                            <ElectionCandidateCard />
-                            <ElectionCandidateCard />
-                        </div>
-                    </div>
-
                 </div>
             </section>
         </div>
     )
 }
 
-const ElectionCandidateCard = () => {
-
-    return (
-        <div className={'border border-secondary p-4 flex flex-col items-center gap-4 rounded cursor-pointer hover:bg-primary hover:text-primary-foreground'}>
-                <Avatar>
-                    <AvatarFallback>
-                        <div className={"size-full bg-secondary"}></div>
-                    </AvatarFallback>
-                </Avatar>
-                <h3 className={"font-bold"}>AGAGA GODWIN</h3>
-                <p>Software Engineering</p>
-                <p>300L</p>
-        </div>
-    )
-}

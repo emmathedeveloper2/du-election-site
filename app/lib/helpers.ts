@@ -43,3 +43,15 @@ export const parseOptionsFromURL = (searchParams: URLSearchParams) => {
 
 export const toTitleCase = (text: string) =>
     text.replace(/\w\S*/g, (word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+
+export const getTimeLeft = (target: Date) => {
+  const now = new Date().getTime();
+  const distance = target.getTime() - now;
+
+  const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+  const hours = Math.floor((distance / (1000 * 60 * 60)) % 24);
+  const minutes = Math.floor((distance / 1000 / 60) % 60);
+  const seconds = Math.floor((distance / 1000) % 60);
+
+  return { days, hours, minutes, seconds };
+}

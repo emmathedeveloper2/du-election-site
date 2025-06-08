@@ -15,3 +15,5 @@ export const POSITIONS = [
     'Sports Director',
     'Academic Director',
 ];
+
+export const ELECTION_START = new Date("2025-06-12T09:00:00");
